@@ -38,6 +38,7 @@ class Installer:
         self._locker = locker
         self._pool = pool
 
+        self._install_root = True
         self._dry_run = False
         self._update = False
         self._verbose = False
@@ -74,6 +75,14 @@ class Installer:
         self._do_install(local_repo)
 
         return 0
+
+    def install_root(self, install_root=True):  # type: (bool) -> Installer
+        self._install_root = install_root
+
+        return self
+
+    def is_install_root(self):  # type: () -> bool
+        return self._install_root
 
     def dry_run(self, dry_run=True):  # type: (bool) -> Installer
         self._dry_run = dry_run

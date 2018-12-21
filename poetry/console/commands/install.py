@@ -9,6 +9,7 @@ class InstallCommand(EnvCommand):
 
     install
         { --no-dev : Do not install dev dependencies. }
+        { --no-root : Do not install the root package (your project). }
         { --dry-run : Outputs the operations but will not execute anything
                       (implicitly enables --verbose). }
         { --E|extras=* : Extra sets of dependencies to install. }
@@ -46,6 +47,7 @@ exist it will look for <comment>pyproject.toml</> and do the same.
 
         installer.extras(extras)
         installer.dev_mode(not self.option("no-dev"))
+        installer.install_root(not self.option("no-root"))
         installer.develop(self.option("develop"))
         installer.dry_run(self.option("dry-run"))
         installer.verbose(self.option("verbose"))
@@ -63,13 +65,14 @@ exist it will look for <comment>pyproject.toml</> and do the same.
             # If this is a true error it will be picked up later by build anyway.
             return 0
 
-        self.line(
-            "  - Installing <info>{}</info> (<comment>{}</comment>)".format(
-                self.poetry.package.pretty_name, self.poetry.package.pretty_version
+        if not self.option("no-root"):
+            self.line(
+                "  - Installing <info>{}</info> (<comment>{}</comment>)".format(
+                    self.poetry.package.pretty_name, self.poetry.package.pretty_version
+                )
             )
-        )
 
-        if self.option("dry-run"):
+        if self.option("dry-run") or self.option("no-root"):
             return 0
 
         setup = self.poetry.file.parent / "setup.py"
